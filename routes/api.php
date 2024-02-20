@@ -5,8 +5,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\SalesController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\ExpensesController;
+use App\Http\Controllers\Api\MaterialController;
+use App\Http\Controllers\Api\MaintainanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,7 +54,8 @@ Route::prefix('v1/auth/')
 //Customer
 Route::middleware(['api', 'auth:sanctum'])
 ->group(function () {
-Route::get('customers/getall',[CustomerController::class,'index']);
+Route::post('customers/getall',[CustomerController::class,'index']);
+Route::post('customers/search_by_name',[CustomerController::class,'search_customer_by_name']);
 Route::post('customers/create',[CustomerController::class,'create']);
 Route::post('customers/get',[CustomerController::class,'shows']);
 Route::get('customers/get/{account_number}/edit',[CustomerController::class,'edit']);
@@ -65,15 +70,52 @@ Auth::routes();
 //Payment
 Route::middleware(['api', 'auth:sanctum'])
 ->group(function () {
-Route::get('payment/getall',[PaymentController::class,'index']);
+Route::post('payment/getall',[PaymentController::class,'all_payments']);
 Route::post('payment/transaction',[PaymentController::class,'show']);
 Route::post('payment/create',[PaymentController::class,'create_payment']);
 Route::post('payment/update',[PaymentController::class,'update_payment']);
-Route::post('customers/get',[CustomerController::class,'shows']);
 Route::post('payment/get',[PaymentController::class,'filter']);
-Route::get('payment/get/{account_number}/edit',[PaymentController::class,'edit']);
-Route::put('payment/get/{account_number}/update',[PaymentController::class,'update']);
-Route::delete('payment/get/{account_number}/delete',[PaymentController::class,'destroy']);
 Route::post('payment/delete',[PaymentController::class,'delete']);
+});
+Auth::routes();
+
+//Maintainance
+Route::middleware(['api', 'auth:sanctum'])
+->group(function () {
+Route::get('maintenance/getall',[MaintainanceController::class,'index']);
+Route::post('maintenance/transaction',[MaintainanceController::class,'show']);
+Route::post('maintenance/create',[MaintainanceController::class,'create_maintenance']);
+Route::post('maintenance/update',[MaintainanceController::class,'update_maintenance']);
+Route::post('maintenance/get',[MaintainanceController::class,'filter']);
+Route::post('maintenance/delete',[MaintainanceController::class,'delete']);
+});
+Auth::routes();
+
+
+Route::middleware(['api', 'auth:sanctum'])
+->group(function () {
+Route::post('expenses/getall',[ExpensesController::class,'index']);
+Route::post('expenses/create',[ExpensesController::class,'create_expenses']);
+Route::post('expenses/update',[ExpensesController::class,'update_expenses']);
+Route::post('expenses/get',[ExpensesController::class,'filterEach']);
+Route::post('expenses/delete',[ExpensesController::class,'delete']);
+});
+Auth::routes();
+
+
+Route::middleware(['api', 'auth:sanctum'])
+->group(function () {
+Route::post('material/getall',[MaterialController::class,'index']);
+Route::post('material/create',[MaterialController::class,'create_material']);
+Route::post('material/update',[MaterialController::class,'update_material']);
+Route::post('material/get',[MaterialController::class,'filterEach']);
+Route::post('material/delete',[MaterialController::class,'delete']);
+});
+Auth::routes();
+
+Route::middleware(['api', 'auth:sanctum'])
+->group(function () {
+Route::post('sales/getall',[SalesController::class,'index']);
+
 });
 Auth::routes();

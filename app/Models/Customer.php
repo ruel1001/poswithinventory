@@ -11,7 +11,7 @@ class customer extends Model
 
     protected $table='customer';
     protected $primaryKey = 'account_number';
-    
+
     protected $fillable =[
         'account_name',
 'address',
@@ -29,5 +29,6 @@ class customer extends Model
 'messenger',
 'contact_number',
 'billing_month',
+'plan_subscribed',
     ];
 }
