@@ -62,7 +62,6 @@ class CustomerController extends Controller
         $validator = Validator::make($request->all(), [
             'account_name' => 'required|string|max:191',
             'address' => 'required|string|max:191',
-            'account_balance' => 'required|string|max:191',
             'date_plan' => 'required|string|max:191',
             'amount_of_installation' => 'required|numeric',
             'due_date_month' => 'required|string|max:191',
@@ -101,7 +100,7 @@ class CustomerController extends Controller
             $customer = Customer::create([
                 'account_name' => $request->account_name,
                 'address' => $request->address,
-                'account_balance' => $request->account_balance,
+                'account_balance' => 0,
                 'date_plan' => $request->date_plan,
                 'amount_of_installation' => $request->amount_of_installation,
                 'due_date_month' => $request->due_date_month,

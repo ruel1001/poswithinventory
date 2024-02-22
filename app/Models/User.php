@@ -20,7 +20,7 @@ class User extends Authenticatable
      */
     protected $table = 'users';
     protected $primaryKey = 'id';
- 
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -40,7 +40,6 @@ class User extends Authenticatable
     ];
 
     protected $fillable =[
-        'uuid',
         'user_name',
         'address',
         'email',

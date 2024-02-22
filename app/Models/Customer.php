@@ -22,7 +22,6 @@ class customer extends Model
 'area',
 'modem',
 'connector',
-'account_balance',
 'arrears',
 'ficamp',
 'others',

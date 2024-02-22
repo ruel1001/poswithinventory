@@ -12,11 +12,14 @@ class maintenance extends Model
     protected $primaryKey = 'maintenance_id';
 
     protected $fillable =[
+        'account_number',
         'account_name',
 'address',
 'account_id',
 'area',
 'material_used',
+'material_quantity_used',
+'material_id',
 'nature_of_repair'
     ];
 }

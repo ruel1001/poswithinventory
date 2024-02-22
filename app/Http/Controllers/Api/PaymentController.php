@@ -175,6 +175,23 @@ public function create_payment(Request $request)
                 // Update other payment fields here...
                 $payment->save();
 
+
+                $customer = Customer::where('account_number', $request->account_number)->first();
+
+                if (!$customer) {
+                    throw new Exception("Customer not found");
+                }
+
+
+
+                // Update customer's account balance
+                $temptotal = $customer->plan_subscribed + $customer->account_balance;
+                $pretotal = $temptotal - $request->amount_paid;
+
+                $customer->account_balance = $pretotal;
+                $customer->save();
+
+
                 return response()->json([
                     'status' => 200,
                     'message' => "Payment updated successfully",

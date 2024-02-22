@@ -48,7 +48,6 @@ class AuthController extends Controller
             $requestData = $request->validated();
 
             $user = $user->create([
-                'uuid' => Str::orderedUuid(),
                 'user_name' => $requestData['user_name'],
                 'email' => $requestData['email'],
                 'address' => $requestData['address'],
@@ -62,13 +61,13 @@ class AuthController extends Controller
             } else {
                 $user->assignRole('customer');
             }
-            
+
             $tokenName = $this->token ?? 'default_token';
 
             $data = [
                 'user' => $user,
                 'token' => $user->createToken($tokenName)->plainTextToken
-    
+
             ];
             return $this->successResponse($data, 'User Created Successfully', Response::HTTP_CREATED);
         } catch (HttpResponseException $e) {

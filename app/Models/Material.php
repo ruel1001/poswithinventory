@@ -15,6 +15,7 @@ class material extends Model
         'material_name',
 'quantity',
 'item',
-'amount'
+'amount',
+'sale_amount'
     ];
 }
