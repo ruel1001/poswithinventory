@@ -10,6 +10,9 @@
         "laravel/framework": "^9.19",
         "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.7",
+        "rap2hpoutre/laravel-log-viewer": "^2.3",
+        "realrashid/sweet-alert": "^7.0",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.3"
     },
     "require-dev": {

@@ -32,6 +32,34 @@ class PaymentController extends Controller
         }
     }
 
+    public function all_payments(Request $request)
+    {
+        $account_name = $request->input('account_name');
+
+        // If material_name is provided, search by name
+        if (!empty($account_name)) {
+            $payment = Payments::where('account_name', 'like', "%$account_name%")->get();
+        } else {
+            // If material_name is empty, show all records
+            $payment = Payments::all();
+        }
+
+        // Check if any records are found
+        if ($payment->count() > 0) {
+            $totalAmount = $payment->sum('amount_paid');
+            return response()->json([
+                'status' => 200,
+                'total_amount' =>  $totalAmount,
+                'data' => $payment
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 404,
+                'message' => "No records available"
+            ], 404);
+        }
+    }
+
 //Create Payment
 public function create_payment(Request $request)
 {
@@ -50,7 +78,8 @@ public function create_payment(Request $request)
     if ($validator->fails()) {
         return response()->json([
             'status' => 422,
-            'message' => $validator->messages()
+            'message' => 'Invalid Input.',
+            'errors' => $validator->messages()
         ], 422);
     } else {
         // Querying the Customer table to find a record with the provided account number
@@ -70,9 +99,22 @@ public function create_payment(Request $request)
             // Add other payment fields here...
             $payment->save();
 
+            $customer->account_number = $request->account_number;
+            $temptotal = $customer->plan_subscribed + $customer->account_balance;
+            $pretotal=  $temptotal- $request->amount_paid;
+
+
+            $customer->account_balance = $pretotal;
+            // Add other payment fields here...
+            $customer->save();
+
+
+
+
             return response()->json([
                 'status' => 200,
-                'message' => "Payment created successfully"
+                'message' => "Payment created successfully",
+                'data'=>$payment,
             ], 200);
         } else {
             // Account not found
@@ -108,17 +150,18 @@ public function create_payment(Request $request)
             'collectors_name' => 'required|string',
             'billing_month' => 'required|string',
         ]);
-    
+
         // Checking if validation fails
         if ($validator->fails()) {
             return response()->json([
                 'status' => 422,
-                'message' => $validator->messages()
+                'message' => 'Invalid Input.',
+                'errors' => $validator->messages()
             ], 422);
         } else {
             // Querying the Payment table to find a record with the provided payment ID
             $payment = Payments::where('payment_id', $request->payment_id)->first();
-    
+
             // Checking if payment exists
             if ($payment) {
                 // Payment exists, update the payment
@@ -131,10 +174,28 @@ public function create_payment(Request $request)
                 $payment->billing_month = $request->billing_month;
                 // Update other payment fields here...
                 $payment->save();
-    
+
+
+                $customer = Customer::where('account_number', $request->account_number)->first();
+
+                if (!$customer) {
+                    throw new Exception("Customer not found");
+                }
+
+
+
+                // Update customer's account balance
+                $temptotal = $customer->plan_subscribed + $customer->account_balance;
+                $pretotal = $temptotal - $request->amount_paid;
+
+                $customer->account_balance = $pretotal;
+                $customer->save();
+
+
                 return response()->json([
                     'status' => 200,
-                    'message' => "Payment updated successfully"
+                    'message' => "Payment updated successfully",
+                    'data'=>$payment,
                 ], 200);
             } else {
                 // Payment not found
@@ -153,7 +214,7 @@ public function create_payment(Request $request)
      */
     public function show(Request $request)
     {
-       
+
         $accountNumber = $request->input('account_number');
 
         // Check if the account number is provided
@@ -163,10 +224,10 @@ public function create_payment(Request $request)
                 'message' => "Account number is required in the request body"
             ], 400);
         }
-    
+
         // Fetch payments associated with the provided account number
         $payments = Payments::where('account_number', $accountNumber)->orderBy('created_at', 'desc')->get();
-    
+
         // Check if payments are found
         if ($payments->count() > 0) {
             return response()->json([
@@ -194,7 +255,7 @@ public function create_payment(Request $request)
             return response()->json([
                 'status' => 404,
                 'message' => "No Record found"
-            ], 404);  
+            ], 404);
         }
     }
 
@@ -205,7 +266,7 @@ public function create_payment(Request $request)
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
- 
+
      public function delete(Request $request){
         $payment_id = $request->input('payment_id');
         $payment = Payments::where('payment_id', $payment_id)->first();
@@ -220,7 +281,7 @@ public function create_payment(Request $request)
             return response()->json([
                 'status'=>404,
                 'message'=>"No Payment found"
-            ],404);  
+            ],404);
         }}
     /**
      * Remove the specified resource from storage.

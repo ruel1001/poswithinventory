@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('others');
             $table->string('messenger');
             $table->string('contact_number');
+            $table->string('plan_subscribed');
             $table->timestamps();
         });
     }
